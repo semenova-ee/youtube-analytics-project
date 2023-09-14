@@ -2,8 +2,6 @@ import json
 import os
 from googleapiclient.discovery import build
 
-from helper.youtube_api_manual import channel_id
-
 
 class Channel:
     """Класс для ютуб-канала"""
@@ -16,7 +14,7 @@ class Channel:
         self.title = self._data.get('snippet', {}).get('title', '')
         self.description = self._data.get('snippet', {}).get('description', '')
         self.url = f"https://www.youtube.com/channel/{self._channel_id}"
-        self.subs = self._data.get('statistics', {}).get('subscriberCount', 0)
+        self.subs = int(self._data.get('statistics', {}).get('subscriberCount', 0))
         self.video_count = self._data.get('statistics', {}).get('videoCount', 0)
         self.view_count = self._data.get('statistics', {}).get('viewCount', 0)
 
@@ -33,7 +31,7 @@ class Channel:
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
-        dict_to_print = self.get_info(channel_id)
+        dict_to_print = self.get_info(self.channel_id)
         print(json.dumps(dict_to_print, indent=2, ensure_ascii=False))
 
     def to_json(self, file_path: str) -> None:
@@ -44,5 +42,27 @@ class Channel:
     def channel_id(self):
         return self._channel_id
 
+    def __str__(self):
+        return f'{self.title} ({self.url})'
+
+    def __eq__(self, other):
+        return self.subs == other.subs
+
+    def __lt__(self, other):
+        return self.subs < other.subs
+
+    def __le__(self, other):
+        return self.subs <= other.subs
+
+    def __add__(self, other):
+        if isinstance(other, Channel):
+            return self.subs + other.subs
+        raise TypeError("Unsupported operand type for +: 'Channel' and {}".format(type(other)))
+
+    def __sub__(self, other):
+        if isinstance(other, Channel):
+            return self.subs - other.subs
+        raise TypeError("Unsupported operand type for -: 'Channel' and {}".format(type(other)))
+
 # ulay = Channel('UC4xZXizv7SCrct1j4IIzMzQ')
-# ulay.print_info()
+# print(ulay.__str__())
