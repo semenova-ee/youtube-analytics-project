@@ -9,12 +9,21 @@ class Video:
 
     def __init__(self, video_id: str) -> None:
         """Экземпляр инициализируется id видео. Дальше все данные будут подтягиваться по API."""
-        self._data = self.get_info(video_id)
-        self._video_id = video_id
-        self.title = self._data.get('snippet', {}).get('title', '')
-        self.url = f"https://www.youtube.com/watch?v={self._video_id}"
-        self.like_count = self._data.get('statistics', {}).get('likeCount', 0)
-        self.view_count = self._data.get('statistics', {}).get('viewCount', 0)
+        try:
+            self._video_id = video_id
+            self._data = self.get_info(video_id)
+            self.title = self._data.get('snippet', {}).get('title', '')
+            self.url = f"https://www.youtube.com/watch?v={self._video_id}"
+            self.like_count = self._data.get('statistics', {}).get('likeCount', 0)
+            self.view_count = self._data.get('statistics', {}).get('viewCount', 0)
+
+        except IndexError:
+            self._video_id = video_id
+            self._data = None
+            self.title = None
+            self.url = None
+            self.like_count = None
+            self.view_count = None
 
     @classmethod
     def get_service(cls):
@@ -36,3 +45,4 @@ class PLVideo(Video):
     def __init__(self, video_id: str, playlist_id: str):
         super().__init__(video_id)
         self.plalist_id = playlist_id
+
